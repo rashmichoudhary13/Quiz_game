@@ -27,12 +27,14 @@ class MCQ():
 
         self.userAns = None
     
+    #It checks if the cursor is clicked on one of the ans or not
     def update(self, cursor, bboxs):
         
         for x, bbox in enumerate(bboxs):
             x1, y1, x2, y2 = bbox
             if x1 < cursor[0] < x2 and y1 < cursor[1] < y2:
                 self.userAns = x + 1
+                # It changes the color of rectangle when it is clicked
                 cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), cv2.FILLED)
 
 #Import csv file data
@@ -75,10 +77,10 @@ while True:
 
         # Checking if the ans is clicked
         if hands:
-            lmList = hands[0]['lmList']
-            cursor = lmList[8]
-            length,info,img = detector.findDistance(lmList[8][0:2], lmList[12][0:2], img)
-            if length < 35:
+            lmList = hands[0]['lmList'] #Find the index finger and store in lmlist
+            cursor = lmList[8] #Info about the tip of index finger
+            length,info,img = detector.findDistance(lmList[8][0:2], lmList[12][0:2], img)  #It checks whether the ans is clicked or not
+            if length < 35: #if length < 35 means the ans is clicked
                 mcq.update(cursor, [bbox1, bbox2, bbox3, bbox4])
                 print(mcq.userAns)
                 if mcq.userAns is not None:
