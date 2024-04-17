@@ -9,7 +9,6 @@ import threading
 import time
 import HandDec
 
-
 # class for question
 class MCQ():
     def __init__(self, data):
@@ -24,27 +23,29 @@ class MCQ():
     def update_ans(self, frame, cursor, bboxs):
         for x, bbox in enumerate(bboxs):
             x1, y1, x2, y2 = bbox
-            # print("Cursor integer Coordinates:", cursor)
-            # Convert cursor coordinates to integer if necessary
+            print("Bounding box: ",x1,y1,x2,y2)
             cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
+            print("cusor_x: ", cursor_x)
+            print("cusor_y: ", cursor_y)
             if x1 < cursor_x < x2 and y1 < cursor_y < y2:
                 self.userAns = x + 1
                 # Change the color of rectangle when it is clicked
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
 
-def load_questions_from_csv():
-    current_directory = os.path.dirname(__file__)
-    pathCSV = os.path.join(current_directory, 'mcq.csv')
-    with open(pathCSV, newline='\n') as f:
-        reader = csv.reader(f)
-        dataAll = list(reader)[1:]
-    mcqList = [MCQ(q) for q in dataAll]
-    
-    qTotal = len(dataAll)
-    return mcqList
+current_directory = os.path.dirname(__file__)
+pathCSV = os.path.join(current_directory, 'mcq.csv')
+with open(pathCSV, newline='\n') as f:
+    reader = csv.reader(f)
+    dataAll = list(reader)[1:]
 
-# Load questions from CSV
-MCQ_LIST = load_questions_from_csv()
+# #to calculate points
+qTotal = len(dataAll)  
+
+#create object for each MCQ
+mcqList = []
+for q in dataAll:
+    mcqList.append(MCQ(q))
+print("Total question: ", len(mcqList))
 
 # Create your views here.
 def index(request):
@@ -55,7 +56,7 @@ def index(request):
 @gzip.gzip_page
 def webcam(request):
     try:
-        cam = VideoCamera()
+        cam = VideoCamera(mcqList)
         return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
     except Exception as e:
         print(e)
@@ -63,7 +64,7 @@ def webcam(request):
     return render(request, 'webcam.html')
 
 class VideoCamera(object):
-    def __init__(self, width=1280, height=720, flip=True):
+    def __init__(self, mcq_list, width=1280, height=720, flip=True):
         self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, width)   # Set frame width
         self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -71,7 +72,9 @@ class VideoCamera(object):
         (self.grabbed, self.frame) = self.video.read()
         self.class_obj = HandDec.HandDetector()  # Initialize hand detector
         threading.Thread(target=self.update, args=()).start()
-
+        self.mcq_list = mcq_list
+        self.qNo = 0
+        
     def __del__(self):
         self.video.release()
 
@@ -86,8 +89,8 @@ class VideoCamera(object):
             print("Distance:", distance)
             
         # Draw question and choices on webcam
-        if MCQ_LIST:
-            mcq = MCQ_LIST[0]  # Get the first question
+        if self.qNo < qTotal:
+            mcq = mcqList[self.qNo]  # Get the first question
             frame,bbox = cvzone.putTextRect(frame, mcq.question, [100,100],2,2,offset=51,border=5)
             frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [100,250],2,2,offset=51,border=5)
             frame,bbox2 = cvzone.putTextRect(frame, mcq.choice2, [400,250],2,2,offset=51,border=5)
@@ -103,17 +106,34 @@ class VideoCamera(object):
                      if distance < 0.05: #if length < 35 means the ans is clicked
                         mcq.update_ans(frame, (cursor_img_x, cursor_img_y), [bbox1, bbox2, bbox3, bbox4])
                         print(mcq.userAns)
-                    
+                        if mcq.userAns is not None:
+                            time.sleep(0.03)
+                            self.qNo+=1
+        else: 
+            score = 0
+            for mcq in mcqList:
+                if mcq.answer == mcq.userAns:
+                    score += 1
+            score = round((score/qTotal)*100, 2)
+            frame, _ = cvzone.putTextRect(frame, "Quiz Completed", [250, 300], 2, 2, offset=50, border=5)
+            frame, _ = cvzone.putTextRect(frame, f'Your Score: {score}%', [700, 300], 2, 2, offset=50, border=5)
+            
+        # Draw a progress bar           
+        barValue = 150 + (950 //qTotal)*self.qNo                
+        cv2.rectangle(frame, (150, 600), (barValue, 650), (0, 255, 0), cv2.FILLED)
+        cv2.rectangle(frame, (150, 600), (1100, 650), (250, 0, 255), 5)
+        frame, _ = cvzone.putTextRect(frame, f'{round((self.qNo/qTotal)*100)}%', [1130, 635], 2, 2, offset=16)
     
+                   
         # Convert frame to JPEG
         _, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
 
     def update(self):
-        while True:
+          while True:
             (self.grabbed, self.frame) = self.video.read()
             time.sleep(0.03)  # Add a short delay to control frame rate
-
+       
 def gen(camera):
     while True:
         frame = camera.get_frame()  
