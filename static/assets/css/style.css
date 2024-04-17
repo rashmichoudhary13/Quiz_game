@@ -690,6 +690,11 @@ Category icon
   border-radius: 14px;
 }
 
+#start-button{
+  margin-top: 8px;
+  margin-right: 22px;
+  border-radius: 24px;
+}
 
 /*--------------------
   Video section

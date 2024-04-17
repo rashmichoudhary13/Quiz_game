@@ -9,6 +9,7 @@ import threading
 import time
 import HandDec
 
+
 # class for question
 class MCQ():
     def __init__(self, data):
@@ -75,8 +76,8 @@ class VideoCamera(object):
         self.mcq_list = mcq_list
         self.qNo = 0
         
-    def __del__(self):
-        self.video.release()
+    # def __del__(self):
+    #     self.video.release()
 
     def get_frame(self):
         _, frame = self.video.read()  # Read the frame from the camera
@@ -91,11 +92,11 @@ class VideoCamera(object):
         # Draw question and choices on webcam
         if self.qNo < qTotal:
             mcq = mcqList[self.qNo]  # Get the first question
-            frame,bbox = cvzone.putTextRect(frame, mcq.question, [100,100],2,2,offset=51,border=5)
-            frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [100,250],2,2,offset=51,border=5)
-            frame,bbox2 = cvzone.putTextRect(frame, mcq.choice2, [400,250],2,2,offset=51,border=5)
-            frame,bbox3 = cvzone.putTextRect(frame, mcq.choice3, [100,400],2,2,offset=51,border=5)
-            frame,bbox4 = cvzone.putTextRect(frame, mcq.choice4,  [400,400],2,2,offset=51,border=5)
+            frame,bbox = cvzone.putTextRect(frame, mcq.question, [300,100],2,2,offset=51,border=5)
+            frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [400,250],2,2,offset=51,border=5)
+            frame,bbox2 = cvzone.putTextRect(frame, mcq.choice2, [800,250],2,2,offset=51,border=5)
+            frame,bbox3 = cvzone.putTextRect(frame, mcq.choice3, [400,400],2,2,offset=51,border=5)
+            frame,bbox4 = cvzone.putTextRect(frame, mcq.choice4,  [800,400],2,2,offset=51,border=5)
             
             for hand_landmarks in detected_hand:
                 if hand_landmarks:
@@ -107,7 +108,7 @@ class VideoCamera(object):
                         mcq.update_ans(frame, (cursor_img_x, cursor_img_y), [bbox1, bbox2, bbox3, bbox4])
                         print(mcq.userAns)
                         if mcq.userAns is not None:
-                            time.sleep(0.03)
+                            time.sleep(0.08)
                             self.qNo+=1
         else: 
             score = 0
@@ -117,12 +118,18 @@ class VideoCamera(object):
             score = round((score/qTotal)*100, 2)
             frame, _ = cvzone.putTextRect(frame, "Quiz Completed", [250, 300], 2, 2, offset=50, border=5)
             frame, _ = cvzone.putTextRect(frame, f'Your Score: {score}%', [700, 300], 2, 2, offset=50, border=5)
-            
+              # Add key event listener
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #         self.video.release()
+            #         return 
+    
         # Draw a progress bar           
         barValue = 150 + (950 //qTotal)*self.qNo                
         cv2.rectangle(frame, (150, 600), (barValue, 650), (0, 255, 0), cv2.FILLED)
         cv2.rectangle(frame, (150, 600), (1100, 650), (250, 0, 255), 5)
         frame, _ = cvzone.putTextRect(frame, f'{round((self.qNo/qTotal)*100)}%', [1130, 635], 2, 2, offset=16)
+        
+       
     
                    
         # Convert frame to JPEG
@@ -136,6 +143,6 @@ class VideoCamera(object):
        
 def gen(camera):
     while True:
-        frame = camera.get_frame()  
+        frame = camera.get_frame()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
