@@ -1,10 +1,10 @@
 Question,Choice1,Choice2,Choice3,Choice4,Answer
-How many vertices does a triangle have?,Two,Three,Four,Five,2
-What is the variable type of a? a = 'yes',Integer,Float,String,Character,3
-Which country recently hosted the COP26 climate conference?,France,UnitedKingdom,Germany,United States,2
-Who won the Nobel Peace Prize in 2023 for their efforts towards global peace?,Malala Yousafzai,Greta Thunberg,The United Nations,Prime Minister of Ethiopia,4
-Who won the 2023 ICC Men's Cricket World Cup?,Australia,India,England,South African,1
-Which of the following countries recently experienced significant protests against government policies resulting in a change in leadership?,Brazil,Turkey,Sudan,Mhannar,3
-Which African country recently faced a military coup resulting in the overthrow of its government?,Nigeria,Ethiopia,Mali,Konta,3
-The 2024 Summer Olympics are scheduled to take place in which city?,Paris,Tokyo,Los Angeles,London,3
-Which space agency successfully landed its rover on Mars in 2023 with the aim of studying the planet's geology and climate?,European Space Agency (ESA),Russian Federal Space Agency,China National Space Administration (CNSA),National Aeronautics and Space Administration (NASA),3
+1.How many vertices does a triangle have?,Two,Three,Four,Five,2
+2.What is the variable type of a? a = 'yes',Integer,Float,String,Character,3
+3.Which country recently hosted the COP26 climate conference?,France,UnitedKingdom,Germany,United States,2
+4.Who won the Nobel Peace Prize in 2023 for their efforts towards global peace?,Malala Yousafzai,Greta Thunberg,The United Nations,Prime Minister of Ethiopia,4
+5.Who won the 2023 ICC Men's Cricket World Cup?,Australia,India,England,South African,1
+6.Which of the following countries recently experienced significant protests against government policies resulting in a change in leadership?,Brazil,Turkey,Sudan,Mhannar,3
+7.Which African country recently faced a military coup resulting in the overthrow of its government?,Nigeria,Ethiopia,Mali,Konta,3
+8.The 2024 Summer Olympics are scheduled to take place in which city?,Paris,Tokyo,Los Angeles,London,3
+9.Which space agency successfully landed its rover on Mars in 2023 with the aim of studying the planet's geology and climate?,European Space Agency (ESA),Russian Federal Space Agency,China National Space Administration (CNSA),National Aeronautics and Space Administration (NASA),3
