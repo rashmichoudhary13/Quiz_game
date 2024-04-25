@@ -51,6 +51,8 @@ print("Total question: ", len(mcqList))
 
 #prev function
 def nav_prev(self,frame, cursor, bboxs):
+    if self.submit_button:
+        return
     for x, bbox in enumerate(bboxs):
         x1, y1, x2, y2 = bbox
         # print("Bounding box: ",x1,y1,x2,y2)
@@ -94,12 +96,16 @@ def submit_clicked(self,frame, cursor, submit):
         x1, y1, x2, y2 = submit
         cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
         if x1 < cursor_x < x2 and y1 < cursor_y < y2:
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
-            print("Submit button clicked")
-            self.submit_button = True
-
-                
+            if self.submit_control:
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
+                print("Submit button clicked")
+                self.submit_button = True
             
+            self.submit_control = False
+        else:
+            self.submit_control = True
+            
+
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
@@ -134,7 +140,8 @@ class VideoCamera(object):
         self.prev_distance_greater = False   #state variable to smoothen the click of answer so that the ans doesn't get selected automatically.
         self.next_button_control = False #state variable to keep track of the click on next button
         self.prev_button_control = False #state variable to keep track of the click on prev button
-        self.submit_button = False #state variable to keep track of submit button
+        self.submit_button = False #state variable to keep track of submit button if it is clicked or not
+        self.submit_control = False #state variable to smoothen the click of submit button
     def __del__(self):
         self.video.release()
 
@@ -144,6 +151,7 @@ class VideoCamera(object):
             frame = cv2.flip(frame, 1)  # Flip the frame horizontally if flip is True
         detected_hand = self.class_obj.findHand(frame, draw_detect=True)  # Detect hand
         hand_landmark = self.class_obj.findLocations(frame, draw_id=8)  # Find hand landmarks
+        distance = 0
         if hand_landmark[0]:
             distance = self.class_obj.findDistance(frame, 8, 12, draw_detect=True)  # Example usage of findDistance
             print("Distance:", distance)
@@ -209,7 +217,9 @@ class VideoCamera(object):
              # Check if the submit button should be displayed
             if not self.submit_button:
                 frame,submit = cvzone.putTextRect(frame, "Submit", [550, 300], 2, 2, offset=50, border=5)
-                submit_clicked(self,frame, (cursor_img_x, cursor_img_y), [submit])
+                if distance < 0.05:
+                    submit_clicked(self,frame, (cursor_img_x, cursor_img_y), [submit])
+               
           
             if self.submit_button:
                 frame, _ = cvzone.putTextRect(frame, "Quiz Completed", [250, 300], 2, 2, offset=50, border=5)
@@ -221,9 +231,6 @@ class VideoCamera(object):
         cv2.rectangle(frame, (150, 600), (1100, 650), (250, 0, 255), 5)
         frame, _ = cvzone.putTextRect(frame, f'{round((self.qNo/qTotal)*100)}%', [1130, 635], 2, 2, offset=16)
         
-       
-    
-                   
         # Convert frame to JPEG
         _, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
