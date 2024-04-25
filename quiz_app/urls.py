@@ -4,5 +4,6 @@ from quiz_app import views
 
 urlpatterns = [
     path("",views.index, name="home"),
-    path('webcam/', views.webcam, name='webcam'),
+    path('coding/', views.coding, name='coding'),
+    path('gk/', views.gk, name='gk'),
 ]

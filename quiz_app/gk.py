@@ -32,7 +32,7 @@ class MCQ():
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
 
 current_directory = os.path.dirname(__file__)
-pathCSV = os.path.join(current_directory, 'coding.csv')
+pathCSV = os.path.join(current_directory, 'gk.csv')
 with open(pathCSV, newline='\n') as f:
     reader = csv.reader(f)
     dataAll = list(reader)[1:]
@@ -104,7 +104,7 @@ def submit_clicked(self,frame, cursor, submit):
             self.submit_control = True
 
 @gzip.gzip_page           
-def webcam(request):
+def webcam_gk(request):
     try:
         cam = VideoCamera(mcqList)
         return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
