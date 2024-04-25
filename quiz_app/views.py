@@ -24,10 +24,10 @@ class MCQ():
     def update_ans(self, frame, cursor, bboxs):
         for x, bbox in enumerate(bboxs):
             x1, y1, x2, y2 = bbox
-            print("Bounding box: ",x1,y1,x2,y2)
+            # print("Bounding box: ",x1,y1,x2,y2)
             cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
-            print("cusor_x: ", cursor_x)
-            print("cusor_y: ", cursor_y)
+            # print("cusor_x: ", cursor_x)
+            # print("cusor_y: ", cursor_y)
             if x1 < cursor_x < x2 and y1 < cursor_y < y2:
                 self.userAns = x + 1
                 # Change the color of rectangle when it is clicked
@@ -40,7 +40,8 @@ with open(pathCSV, newline='\n') as f:
     dataAll = list(reader)[1:]
 
 # #to calculate points
-qTotal = len(dataAll)  
+qTotal = len(dataAll) 
+print("value of qtotal:",qTotal) 
 
 #create object for each MCQ
 mcqList = []
@@ -52,15 +53,15 @@ print("Total question: ", len(mcqList))
 def nav_prev(self,frame, cursor, bboxs):
     for x, bbox in enumerate(bboxs):
         x1, y1, x2, y2 = bbox
-        print("Bounding box: ",x1,y1,x2,y2)
+        # print("Bounding box: ",x1,y1,x2,y2)
         cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
-        print("cusor_x: ", cursor_x)
-        print("cusor_y: ", cursor_y)
+        # print("cusor_x: ", cursor_x)
+        # print("cusor_y: ", cursor_y)
         if x1 < cursor_x < x2 and y1 < cursor_y < y2:
             if self.prev_button_control:
+               print("Inside prev")
                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
-               print("prev button clicked")
-               if self.qNo < qTotal:
+               if self.qNo < qTotal+1:
                    self.qNo -= 1
                    if self.qNo < 0:
                        self.qNo = 0
@@ -73,23 +74,31 @@ def nav_prev(self,frame, cursor, bboxs):
 def nav_next(self,frame, cursor, bboxs):
     for x, bbox in enumerate(bboxs):
         x1, y1, x2, y2 = bbox
-        print("Bounding box: ",x1,y1,x2,y2)
+        # print("Bounding box: ",x1,y1,x2,y2)
         cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
-        print("cusor_x: ", cursor_x)
-        print("cusor_y: ", cursor_y)
+        # print("cusor_x: ", cursor_x)
+        # print("cusor_y: ", cursor_y)
         if x1 < cursor_x < x2 and y1 < cursor_y < y2:
             if self.next_button_control:
                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
-               print("next button clicked")
                self.qNo += 1
-               if self.qNo >= qTotal:
-                    self.qNo = qTotal - 1
                             
             self.next_button_control = False
         else:
             self.next_button_control = True
 
+#Function to check if the submit button is clicked or not.
+def submit_clicked(self,frame, cursor, submit):
+    for x, submit in enumerate(submit):
+        x1, y1, x2, y2 = submit
+        cursor_x, cursor_y = int(cursor[0]), int(cursor[1])
+        if x1 < cursor_x < x2 and y1 < cursor_y < y2:
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
+            print("Submit button clicked")
+            self.submit_button = True
 
+                
+            
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
@@ -121,10 +130,10 @@ class VideoCamera(object):
         self.button_height = 40
         self.prev_button_coords = (150, 550, self.button_width, self.button_height)
         self.next_button_coords = (980, 550, self.button_width, self.button_height)
-        self.prev_distance_greater = False   #To control the click of answer
-        self.next_button_control = False
-        self.prev_button_control = False
-        
+        self.prev_distance_greater = False   #state variable to smoothen the click of answer so that the ans doesn't get selected automatically.
+        self.next_button_control = False #state variable to keep track of the click on next button
+        self.prev_button_control = False #state variable to keep track of the click on prev button
+        self.submit_button = False #state variable to keep track of submit button
     def __del__(self):
         self.video.release()
 
@@ -141,14 +150,15 @@ class VideoCamera(object):
         #previous and next button
         frame, bbox5 = cvzone.putTextRect(frame, "Previous", [150, 550], 2, 2, offset=40, border=3) 
         frame, bbox6 = cvzone.putTextRect(frame, "Next", [980, 550], 2, 2, offset=40, border=3)
-            
+        
+        cursor_img_x, cursor_img_y = 0, 0  # Initialize cursor coordinates    
         for hand_landmarks in detected_hand:
             if hand_landmarks:
                 cursor_norm = hand_landmarks[8]  # Normalized coordinates of the tip of the index finger
                 # Convert normalized coordinates to image coordinates
                 cursor_img_x = int(cursor_norm[0] * 1280)
                 cursor_img_y = int(cursor_norm[1] * 720)
-                print("Nav cursor coord: ", cursor_img_x, cursor_img_y )
+                # print("Nav cursor coord: ", cursor_img_x, cursor_img_y )
                 
                 # Check if cursor is within the previous button bounding box
                 nav_prev(self,frame, (cursor_img_x, cursor_img_y), [bbox5])
@@ -195,13 +205,15 @@ class VideoCamera(object):
                 if mcq.answer == mcq.userAns:
                     score += 1
             score = round((score/qTotal)*100, 2)
-            frame, _ = cvzone.putTextRect(frame, "Quiz Completed", [250, 300], 2, 2, offset=50, border=5)
-            frame, _ = cvzone.putTextRect(frame, f'Your Score: {score}%', [700, 300], 2, 2, offset=50, border=5)
-        
-        
-        
-    
-    
+             # Check if the submit button should be displayed
+            if not self.submit_button:
+                frame,submit = cvzone.putTextRect(frame, "Submit", [550, 300], 2, 2, offset=50, border=5)
+                submit_clicked(self,frame, (cursor_img_x, cursor_img_y), [submit])
+          
+            if self.submit_button:
+                frame, _ = cvzone.putTextRect(frame, "Quiz Completed", [250, 300], 2, 2, offset=50, border=5)
+                frame, _ = cvzone.putTextRect(frame, f'Your Score: {score}%', [700, 300], 2, 2, offset=50, border=5)
+            
         # Draw a progress bar           
         barValue = 150 + (950 //qTotal)*self.qNo                
         cv2.rectangle(frame, (150, 600), (barValue, 650), (0, 255, 0), cv2.FILLED)
