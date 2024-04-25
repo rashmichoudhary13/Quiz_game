@@ -80,8 +80,9 @@ def nav_next(self,frame, cursor, bboxs):
         # print("cusor_y: ", cursor_y)
         if x1 < cursor_x < x2 and y1 < cursor_y < y2:
             if self.next_button_control:
-               cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
-               self.qNo += 1
+                if self.qNo < qTotal:
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), cv2.FILLED)
+                    self.qNo += 1
                             
             self.next_button_control = False
         else:
