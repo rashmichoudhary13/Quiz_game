@@ -172,10 +172,10 @@ class VideoCamera(object):
             # Calculate font scale dynamically based on text length
             font_scale =  100 / (len(mcq.question) + 1)
             frame,bbox = cvzone.putTextRect(frame, mcq.question, [200,100],font_scale,2,offset=51,border=5)
-            frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [400,250],2,2,offset=51,border=5)
+            frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [300,250],2,2,offset=51,border=5)
             frame,bbox2 = cvzone.putTextRect(frame, mcq.choice2, [800,250],2,2,offset=51,border=5)
-            frame,bbox3 = cvzone.putTextRect(frame, mcq.choice3, [400,400],2,2,offset=51,border=5)
-            frame,bbox4 = cvzone.putTextRect(frame, mcq.choice4,  [800,400],2,2,offset=51,border=5)
+            frame,bbox3 = cvzone.putTextRect(frame, mcq.choice3, [300,400],2,2,offset=51,border=5)
+            frame,bbox4 = cvzone.putTextRect(frame, mcq.choice4, [800,400],2,2,offset=51,border=5)
             
             for hand_landmarks in detected_hand:
                 if hand_landmarks:

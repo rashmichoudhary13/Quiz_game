@@ -1,6 +1,11 @@
 Question,Choice1,Choice2,Choice3,Choice4,Answer
-1.How many vertices does a triangle have?,Two,Three,Four,Five,2
-2.What is the variable type of a? a = 'yes',Integer,Float,String,Character,3
-3.Which country recently hosted the COP26 climate conference?,France,UnitedKingdom,Germany,United States,2
-4.Who won the Nobel Peace Prize in 2023 for their efforts towards global peace?,Malala Yousafzai,Greta Thunberg,The United Nations,Prime Minister of Ethiopia,4
-5.Who won the 2023 ICC Men's Cricket World Cup?,Australia,India,England,South African,1
+1. Which country recently hosted the COP26 climate conference?,France,UnitedKingdom,Germany,United States,2
+2. Who won the 2023 ICC Men's Cricket World Cup?,Australia,India, England,South African,1
+3. The 2024 Summer Olympics are scheduled to take place in which city?,Paris,Tokyo,Los Angeles,London,3
+4. After how many years are the Olympics held?,2,3,4,1,3
+5. In which year and at which place Indias national anthem was sung for the first time?,1911 Kolkata,1912 Lucknow,1913 Delhi,1914 Bombay,1
+6. In which year did Gandhiji start Satyagraha Movement?,1927,1919,1934,1942,2
+7. In 2023 which country took over the G20 Presidency?,Germany,Brazil,India,France,3
+8. The Bhopal Gas Tragedy happened in which year?,1972,1984,1992,1998,2
+9. Which state/UT is set to introduce a Cloud Kitchen Policy?,Goa,Telangana,Maharashtra,Delhi,4
+10. India signed a MoU with which country on energy co-operation in 2023?,UAE,Saudi Arabia,Malaysia,Afghanistan,2
