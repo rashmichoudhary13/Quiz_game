@@ -531,9 +531,9 @@ ul.caption-slides li {
   border: 1.5px solid green;
   margin: 38px 0 38px 0;
 }
-.image{
+/* .image{
   width: 369px;
-}
+} */
 
 .big-title-sec .big-subtitle {
   font-family: 'Raleway', sans-serif;
@@ -1112,4 +1112,9 @@ p.copyright {
   .back-to-top {
     visibility: hidden;
   }
+}
+
+/* logo */
+.name-logo{
+  margin-top: -47px;
 }
