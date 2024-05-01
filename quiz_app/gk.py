@@ -7,6 +7,7 @@ import cvzone
 import threading
 import time
 import HandDec
+import random 
 
 # class for question
 class MCQ():
@@ -46,6 +47,12 @@ mcqList = []
 for q in dataAll:
     mcqList.append(MCQ(q))
 print("Total question: ", len(mcqList))
+
+#Random function to put question randomly in mcqList_random
+random.shuffle(mcqList)
+mcqList_random = mcqList[:10]
+print("Total question randomly:",len(mcqList_random))
+
 
 #prev function
 def nav_prev(self,frame, cursor, bboxs):
