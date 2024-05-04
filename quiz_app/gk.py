@@ -40,7 +40,6 @@ with open(pathCSV, newline='\n') as f:
 
 # #to calculate points
 qTotal = len(dataAll) 
-print("value of qtotal:",qTotal) 
 
 #create object for each MCQ
 mcqList = []
@@ -174,11 +173,11 @@ class VideoCamera(object):
                 
                     
         # Draw question and choices on webcam
-        if self.qNo < qTotal:
-            mcq = self.mcq_list[self.qNo]  # Get the current question
+        if self.qNo < len(mcqList_random):
+            mcq = mcqList_random[self.qNo]  # Get the current question
             # Calculate font scale dynamically based on text length
             font_scale =  100 / (len(mcq.question) + 1)
-            frame,bbox = cvzone.putTextRect(frame, mcq.question, [200,100],font_scale,2,offset=51,border=5)
+            frame,bbox = cvzone.putTextRect(frame, f"{self.qNo + 1}. {mcq.question}", [200,100],font_scale,2,offset=51,border=5)
             frame,bbox1 = cvzone.putTextRect(frame, mcq.choice1, [300,250],2,2,offset=51,border=5)
             frame,bbox2 = cvzone.putTextRect(frame, mcq.choice2, [800,250],2,2,offset=51,border=5)
             frame,bbox3 = cvzone.putTextRect(frame, mcq.choice3, [300,400],2,2,offset=51,border=5)
@@ -223,10 +222,10 @@ class VideoCamera(object):
                 frame, _ = cvzone.putTextRect(frame, f'Your Score: {score}%', [700, 300], 2, 2, offset=50, border=5)
             
         # Draw a progress bar           
-        barValue = 150 + (950 //qTotal)*self.qNo                
+        barValue = 150 + (950 //len(mcqList_random))*self.qNo                
         cv2.rectangle(frame, (150, 600), (barValue, 650), (0, 255, 0), cv2.FILLED)
         cv2.rectangle(frame, (150, 600), (1100, 650), (250, 0, 255), 5)
-        frame, _ = cvzone.putTextRect(frame, f'{round((self.qNo/qTotal)*100)}%', [1130, 635], 2, 2, offset=16)
+        frame, _ = cvzone.putTextRect(frame, f'{round((self.qNo/len(mcqList_random))*100)}%', [1130, 635], 2, 2, offset=16)
         
         # Convert frame to JPEG
         _, jpeg = cv2.imencode('.jpg', frame)
